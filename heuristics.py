@@ -7,8 +7,8 @@ Date:    2014, 2015, 2016, 2019
 
 Student Details
 ---------------
-Student Name:
-Student Number:
+Student Name: Zheyuan Zhang
+Student Number: u6870923
 Date:
 
 This is where you need to write your heuristics for variable selection and

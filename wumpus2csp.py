@@ -7,9 +7,9 @@ Date: 2016, 2019, 2020
 
 Student Details
 ---------------
-Student Name:
-Student Number:
-Date:
+Student Name: Zheyuan Zhang
+Student Number: u6870923
+Date: 2020.5.1
 """
 import argparse
 import os
