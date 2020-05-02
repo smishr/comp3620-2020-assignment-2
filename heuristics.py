@@ -9,7 +9,7 @@ Student Details
 ---------------
 Student Name: Zheyuan Zhang
 Student Number: u6870923
-Date:
+Date: 2020.5.2
 
 This is where you need to write your heuristics for variable selection and
 value ordering.
@@ -78,7 +78,25 @@ def next_variable_md(assignment: Assignment, gamma: CSP) -> Optional[str]:
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Error: MD heuristic not implemented yet!")
+    max_num = 0
+    answer = None
+    for key in gamma.variables:
+        if key not in assignment:
+            count = 0
+            for var in gamma.neighbours[key]:
+                if var not in assignment:
+                    count += 1
+            if count > max_num:
+                max_num = count
+                answer = key
+            elif count == max_num and count == 0:
+                max_num = count
+                answer = key
+
+    if answer not in assignment:
+        return answer
+
+    return None
 
 
 def next_variable_mrv(assignment: Assignment, gamma: CSP) -> Optional[str]:
