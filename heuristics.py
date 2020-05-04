@@ -90,13 +90,9 @@ def next_variable_md(assignment: Assignment, gamma: CSP) -> Optional[str]:
                 max_num = count
                 answer = key
             elif count == max_num and count == 0:
-                max_num = count
                 answer = key
 
-    if answer not in assignment:
-        return answer
-
-    return None
+    return answer
 
 
 def next_variable_mrv(assignment: Assignment, gamma: CSP) -> Optional[str]:
@@ -121,7 +117,19 @@ def next_variable_mrv(assignment: Assignment, gamma: CSP) -> Optional[str]:
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Error: MRV heuristic not implemented yet!")
+    answer = None
+    count = 1000
+    for var in gamma.variables:
+        if var not in assignment:
+            var_count = len(gamma.current_domains[var])
+            for v in gamma.current_domains[var]:
+                if gamma.count_conflicts(var, v):
+                    var_count -= 1
+            if var_count < count:
+                count = var_count
+                answer = var
+
+    return answer
 
 
 def next_variable_md_mrv(assignment: Assignment, gamma: CSP) -> Optional[str]:
@@ -147,7 +155,34 @@ def next_variable_md_mrv(assignment: Assignment, gamma: CSP) -> Optional[str]:
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Error: MD/MRV heuristic not implemented yet!")
+    max_num = 0
+    answer_md = []
+    for key in gamma.variables:
+        if key not in assignment:
+            count = 0
+            for var in gamma.neighbours[key]:
+                if var not in assignment:
+                    count += 1
+            if count > max_num:
+                max_num = count
+                answer_md.clear()
+                answer_md.append(key)
+            elif count == max_num:
+                answer_md.append(key)
+
+    answer = None
+    count = 1000
+    for var in answer_md:
+        if var not in assignment:
+            var_count = len(gamma.current_domains[var])
+            for v in gamma.current_domains[var]:
+                if gamma.count_conflicts(var, v):
+                    var_count -= 1
+            if var_count < count:
+                count = var_count
+                answer = var
+
+    return answer
 
 
 def next_variable_mrv_md(assignment: Assignment, gamma: CSP) -> Optional[str]:
@@ -173,7 +208,36 @@ def next_variable_mrv_md(assignment: Assignment, gamma: CSP) -> Optional[str]:
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Error: MRV/MD heuristic not implemented yet!")
+    answer_mrv = []
+    count = 1000
+    for var in gamma.variables:
+        if var not in assignment:
+            var_count = len(gamma.current_domains[var])
+            for v in gamma.current_domains[var]:
+                if gamma.count_conflicts(var, v):
+                    var_count -= 1
+            if var_count < count:
+                count = var_count
+                answer_mrv.clear()
+                answer_mrv.append(var)
+            elif var_count == count:
+                answer_mrv.append(var)
+
+    max_num = 0
+    answer = None
+    for key in answer_mrv:
+        if key not in assignment:
+            count = 0
+            for var in gamma.neighbours[key]:
+                if var not in assignment:
+                    count += 1
+            if count > max_num:
+                max_num = count
+                answer = key
+            elif count == max_num and count == 0:
+                answer = key
+
+    return answer
 
 
 # -----------------------------------------------------------------------------
