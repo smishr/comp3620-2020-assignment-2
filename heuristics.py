@@ -307,7 +307,20 @@ def value_ordering_lcvf(var: str, assignment: Assignment, gamma: CSP) -> List[st
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Error: LCVF heuristic not implemented yet!")
+    answer = None
+    min_count = 1000
+
+    for var in gamma.variables:
+        if var not in assignment:
+            var_count = 0
+            for v in gamma.current_domains[var]:
+                if gamma.count_conflicts(var, v):
+                    var_count += 1
+            if var_count < min_count:
+                min_count = var_count
+                answer = var
+
+    return answer
 
 
 # -------------------------------------------------------------------------------
