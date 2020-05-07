@@ -312,8 +312,13 @@ def value_ordering_lcvf(var: str, assignment: Assignment, gamma: CSP) -> List[st
 
     if var not in assignment:
         for v in gamma.current_domains[var]:
-            var_count = gamma.count_conflicts(var, v)
-            answer_list.append((var_count, v))
+            conflicts = 0
+            all_conflicts = gamma.conflicts[(var, v)]
+            for key in all_conflicts.keys():
+                if key in gamma.neighbours[var] and key not in assignment:
+                    if v in all_conflicts[key] and v in gamma.current_domains[key]:
+                        conflicts += 1
+            answer_list.append((conflicts, v))
 
     for key in sorted(answer_list, key=(lambda x: x[0])):
         answer.append(key[1])
