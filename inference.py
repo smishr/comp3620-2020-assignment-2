@@ -9,7 +9,7 @@ Student Details
 ---------------
 Student Name: Zheyuan Zhang
 Student Number: u6870923
-Date:
+Date: 2020.5.5
 """
 
 import collections
@@ -50,7 +50,28 @@ def forward_checking(var: str, assignment: Assignment, gamma: CSP) -> Optional[P
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("Forward Checking hasn't been implemented!")
+    answer = []
+    count = 1000
+    for neighbour in gamma.neighbours[var]:
+        if neighbour not in assignment:
+            var_count = len(gamma.current_domains[neighbour])
+            for v in gamma.current_domains[neighbour]:
+                if gamma.count_conflicts(neighbour, v):
+                    var_count -= 1
+            if var_count < count:
+                count = var_count
+                answer.clear()
+                answer.append(neighbour)
+            elif var_count == count:
+                answer.append(neighbour)
+
+    domain_copy = gamma.current_domains.copy()
+    for sol in answer:
+        for key in domain_copy.keys():
+            if sol == key:
+                domain_copy.pop(key)
+
+    return domain_copy
 
 
 def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> Optional[Pruned]:

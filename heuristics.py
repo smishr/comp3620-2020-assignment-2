@@ -9,7 +9,7 @@ Student Details
 ---------------
 Student Name: Zheyuan Zhang
 Student Number: u6870923
-Date: 2020.5.2
+Date: 2020.5.2 - 2020.5.5
 
 This is where you need to write your heuristics for variable selection and
 value ordering.
@@ -307,19 +307,16 @@ def value_ordering_lcvf(var: str, assignment: Assignment, gamma: CSP) -> List[st
 
     """
     # *** YOUR CODE HERE ***
-    answer = None
-    min_count = 1000
+    answer_list = []
+    answer = []
 
-    for var in gamma.variables:
-        if var not in assignment:
-            var_count = 0
-            for v in gamma.current_domains[var]:
-                if gamma.count_conflicts(var, v):
-                    var_count += 1
-            if var_count < min_count:
-                min_count = var_count
-                answer = var
+    if var not in assignment:
+        for v in gamma.current_domains[var]:
+            var_count = gamma.count_conflicts(var, v)
+            answer_list.append((var_count, v))
 
+    for key in sorted(answer_list, key=(lambda x: x[0])):
+        answer.append(key[1])
     return answer
 
 
