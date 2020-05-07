@@ -58,6 +58,8 @@ def forward_checking(var: str, assignment: Assignment, gamma: CSP) -> Optional[P
                 if val in gamma.current_domains[next_step]:
                     answer.append((next_step, val))
 
+    # if len(all_conflicts) - len(answer) < 1:
+    #     return None
     return answer
 
 
