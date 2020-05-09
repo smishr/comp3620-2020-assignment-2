@@ -107,29 +107,30 @@ def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> O
     else:
         for binary_var in gamma.neighbours[var]:
             if binary_var not in assignment:
-                arc_queue.append((var, binary_var))
+                arc_queue.append((binary_var, var))
 
-    while arc_queue:
-        var, binary_var = arc_queue.pop()
-        u_domains = gamma.current_domains[var].copy()
-        v_domains = gamma.current_domains[binary_var].copy()
-        # change, temp_answer = reduce_arc(var, binary_var, gamma, [], u_domains, v_domains)
-        change, temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
-        if change:
-            if len(gamma.current_domains[var]) <= 1:
-                return None
-            else:
-                for key in temp_answer:
-                    if key not in assignment:
-                        answer.append(key)
-                for new_var in gamma.neighbours[var]:
-                    if new_var != binary_var and new_var not in assignment:
-                        arc_queue.append((new_var, var))
+    ac3(gamma, assignment, domains, arc_queue, answer)
 
     return answer
 
 
-# def reduce_arc(var, binary_var, gamma: CSP, temp_answer, u_domains, v_domains):
+def ac3(gamma: CSP, assignment,  domains, arc_queue, answer):
+    while arc_queue:
+        var, binary_var = arc_queue.pop()
+        change, temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
+        if change:
+            if len(domains[var]) == 1:
+                return None
+            for key in temp_answer:
+                if key not in answer:
+                    answer.append(key)
+            for new_var in gamma.neighbours[var]:
+                if new_var != binary_var and new_var not in assignment:
+                    arc_queue.append((new_var, var))
+
+    return answer
+
+
 def reduce_arc(var, binary_var, gamma: CSP, temp_answer, domains):
     change = None
     for val in list(domains[var]):
@@ -144,6 +145,7 @@ def reduce_arc(var, binary_var, gamma: CSP, temp_answer, domains):
             temp_answer.append((var, val))
             domains[var].remove(val)
     return change, temp_answer
+
 
 # -------------------------------------------------------------------------------
 # A function use to get the correct inference method for the search
