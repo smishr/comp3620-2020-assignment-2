@@ -53,13 +53,14 @@ def forward_checking(var: str, assignment: Assignment, gamma: CSP) -> Optional[P
     answer = []
     all_conflicts = gamma.conflicts[(var, assignment[var])]
     for next_step in all_conflicts.keys():
-        if next_step not in assignment:
-            for val in all_conflicts[next_step]:
-                if val in gamma.current_domains[next_step]:
-                    answer.append((next_step, val))
+        temp_domain = gamma.domains[next_step].copy()
+        for val in all_conflicts[next_step]:
+            if val in gamma.current_domains[next_step]:
+                answer.append((next_step, val))
+                temp_domain.remove(val)
+                if len(temp_domain) < 1:
+                    return None
 
-    # if len(all_conflicts) - len(answer) < 1:
-    #     return None
     return answer
 
 
@@ -93,8 +94,56 @@ def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> O
 
     """
     # *** YOUR CODE HERE ***
-    raise NotImplementedError("AC-3 hasn't been implemented yet!")
+    import copy
 
+    answer = []
+    arc_queue = collections.deque()
+    domains = copy.deepcopy(gamma.current_domains)
+    if var is None:
+        for key in gamma.variables:
+            for con_key in gamma.neighbours[key]:
+                if key not in assignment and con_key not in assignment:
+                    arc_queue.append((key, con_key))
+    else:
+        for binary_var in gamma.neighbours[var]:
+            if binary_var not in assignment:
+                arc_queue.append((var, binary_var))
+
+    while arc_queue:
+        var, binary_var = arc_queue.pop()
+        u_domains = gamma.current_domains[var].copy()
+        v_domains = gamma.current_domains[binary_var].copy()
+        # change, temp_answer = reduce_arc(var, binary_var, gamma, [], u_domains, v_domains)
+        change, temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
+        if change:
+            if len(gamma.current_domains[var]) <= 1:
+                return None
+            else:
+                for key in temp_answer:
+                    if key not in assignment:
+                        answer.append(key)
+                for new_var in gamma.neighbours[var]:
+                    if new_var != binary_var and new_var not in assignment:
+                        arc_queue.append((new_var, var))
+
+    return answer
+
+
+# def reduce_arc(var, binary_var, gamma: CSP, temp_answer, u_domains, v_domains):
+def reduce_arc(var, binary_var, gamma: CSP, temp_answer, domains):
+    change = None
+    for val in list(domains[var]):
+        change = True
+        all_conflicts = gamma.conflicts[(var, val)]
+        if binary_var in all_conflicts.keys():
+            for b_val in domains[binary_var]:
+                if b_val not in all_conflicts[binary_var]:
+                    change = False
+                    break
+        if change:
+            temp_answer.append((var, val))
+            domains[var].remove(val)
+    return change, temp_answer
 
 # -------------------------------------------------------------------------------
 # A function use to get the correct inference method for the search
