@@ -102,8 +102,7 @@ def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> O
     if var is None:
         for key in gamma.variables:
             for con_key in gamma.neighbours[key]:
-                if key not in assignment and con_key not in assignment:
-                    arc_queue.append((key, con_key))
+                arc_queue.append((key, con_key))
     else:
         for binary_var in gamma.neighbours[var]:
             if binary_var not in assignment:
@@ -116,11 +115,9 @@ def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> O
 
 def ac3(gamma: CSP, assignment,  domains, arc_queue, answer):
     while arc_queue:
-        var, binary_var = arc_queue.pop()
-        change, temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
-        if change:
-            if len(domains[var]) == 1:
-                return None
+        var, binary_var = arc_queue.popleft()
+        temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
+        if temp_answer:
             for key in temp_answer:
                 if key not in answer:
                     answer.append(key)
@@ -132,7 +129,6 @@ def ac3(gamma: CSP, assignment,  domains, arc_queue, answer):
 
 
 def reduce_arc(var, binary_var, gamma: CSP, temp_answer, domains):
-    change = None
     for val in list(domains[var]):
         change = True
         all_conflicts = gamma.conflicts[(var, val)]
@@ -142,9 +138,10 @@ def reduce_arc(var, binary_var, gamma: CSP, temp_answer, domains):
                     change = False
                     break
         if change:
-            temp_answer.append((var, val))
-            domains[var].remove(val)
-    return change, temp_answer
+            if len(domains[var]) > 1:
+                temp_answer.append((var, val))
+                domains[var].remove(val)
+    return temp_answer
 
 
 # -------------------------------------------------------------------------------
