@@ -113,7 +113,7 @@ def arc_consistency(var: Optional[str], assignment: Assignment, gamma: CSP) -> O
     return answer
 
 
-def ac3(gamma: CSP, assignment,  domains, arc_queue, answer):
+def ac3(gamma: CSP, assignment, domains, arc_queue, answer):
     while arc_queue:
         var, binary_var = arc_queue.popleft()
         temp_answer = reduce_arc(var, binary_var, gamma, [], domains)

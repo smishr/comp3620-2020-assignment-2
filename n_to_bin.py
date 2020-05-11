@@ -9,7 +9,7 @@ Student Details
 ---------------
 Student Name: Zheyuan Zhang
 Student Number: u6870923
-Date:
+Date: 2020.5.10
 """
 import argparse
 import os
@@ -57,6 +57,40 @@ def main():
     variables, constraints = parse_nary_file(input_path)
 
     # *** YOUR CODE HERE ***
+    # print(constraints)
+    new_variables = {}
+    var_name_map = {}
+    count = 0
+
+    # create new variable name map
+    for con_info in constraints:
+        var_combine = ''
+        for var in con_info[0]:
+            var_combine += var
+        var_name_map[var_combine] = 'var'+str(count)
+        new_variables[var_combine] = con_info[1:]
+        count += 1
+
+    # create new values for new variables
+    for name in new_variables.keys():
+        new_list = []
+        for values in new_variables[name][0]:
+            new_val = ''
+            for value in values:
+                new_val += value
+            new_list.append(new_val)
+        new_variables[name] = new_list
+
+    # find new constrains
+    con_list = {}
+    for key1 in new_variables.keys():
+        for key2 in new_variables.keys():
+            if key2 != key1 and ((key2, key1) not in con_list.keys() and (key1, key2) not in con_list.keys()):
+                con_list[(key1, key2)] = ''
+
+    # find new constrain values
+    
+
 
 
 # -----------------------------------------------------------------------------
