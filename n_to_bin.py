@@ -59,15 +59,16 @@ def main():
     # *** YOUR CODE HERE ***
     # print(constraints)
     new_variables = {}
-    var_name_map = {}
+
     count = 0
 
+    var_name_map = {}
     # create new variable name map
     for con_info in constraints:
         var_combine = ''
         for var in con_info[0]:
             var_combine += var
-        var_name_map[var_combine] = 'var'+str(count)
+        var_name_map[var_combine] = 'var' + str(count)
         new_variables[var_combine] = con_info[1:]
         count += 1
 
@@ -81,16 +82,49 @@ def main():
             new_list.append(new_val)
         new_variables[name] = new_list
 
-    # find new constrains
+    # find new constrain pairs
     con_list = {}
     for key1 in new_variables.keys():
         for key2 in new_variables.keys():
             if key2 != key1 and ((key2, key1) not in con_list.keys() and (key1, key2) not in con_list.keys()):
                 con_list[(key1, key2)] = ''
 
-    # find new constrain values
-    
+    # find new constrain values' location
+    c_location = {}
+    for key1, key2 in con_list.keys():
+        loc = ''
+        for c1 in key1:
+            for c2 in key2:
+                if c1 == c2:
+                    loc += (str(key1.find(c1)) + str(key2.find(c2)) + ' ')
+        c_location[(key1, key2)] = loc
 
+    # find values of new constrain pairs
+    for key in con_list.keys():
+        for val1 in new_variables[key[0]]:
+            for val2 in new_variables[key[1]]:
+                conflict = False
+                for con in c_location[key].split():
+                    if val1[int(con[0])] != val2[int(con[1])]:
+                        conflict = True
+                        break
+                if conflict is False:
+                    con_list[key] = con_list[key] + val1 + ' ' + val2 + ' : '
+
+    try:
+        file = open(output_path, 'w')
+        for var, values in new_variables.items():
+            val_str = ''
+            for val in values:
+                val_str += val + ' '
+            file.write(var_name_map[var]+" : " + val_str.strip()+'\n')
+
+        for con, values in con_list.items():
+            file.write('con '+var_name_map[con[0]]+' '+var_name_map[con[1]]+' '+values[:-3]+'\n')
+    except IOError:
+        print("failed")
+    finally:
+        file.close()
 
 
 # -----------------------------------------------------------------------------
