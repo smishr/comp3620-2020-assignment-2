@@ -117,10 +117,10 @@ def main():
             val_str = ''
             for val in values:
                 val_str += val + ' '
-            file.write(var_name_map[var]+" : " + val_str.strip()+'\n')
+            file.write('var '+var_name_map[var]+" : " + val_str.strip()+'\n')
 
         for con, values in con_list.items():
-            file.write('con '+var_name_map[con[0]]+' '+var_name_map[con[1]]+' '+values[:-3]+'\n')
+            file.write('con '+var_name_map[con[0]]+' '+var_name_map[con[1]]+' : '+values[:-3]+'\n')
     except IOError:
         print("failed")
     finally:
