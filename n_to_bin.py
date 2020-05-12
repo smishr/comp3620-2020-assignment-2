@@ -68,8 +68,8 @@ def main():
         var_combine = ''
         for var in con_info[0]:
             var_combine += var
-        var_name_map[var_combine] = 'var' + str(count)
-        new_variables[var_combine] = con_info[1:]
+        var_name_map['var' + str(count)] = var_combine
+        new_variables['var' + str(count)] = con_info[1:]
         count += 1
 
     # create new values for new variables
@@ -93,10 +93,10 @@ def main():
     c_location = {}
     for key1, key2 in con_list.keys():
         loc = ''
-        for c1 in key1:
-            for c2 in key2:
+        for c1 in var_name_map[key1]:
+            for c2 in var_name_map[key2]:
                 if c1 == c2:
-                    loc += (str(key1.find(c1)) + str(key2.find(c2)) + ' ')
+                    loc += (str(var_name_map[key1].find(c1)) + str(var_name_map[key2].find(c2)) + ' ')
         c_location[(key1, key2)] = loc
 
     # find values of new constrain pairs
@@ -117,10 +117,11 @@ def main():
             val_str = ''
             for val in values:
                 val_str += val + ' '
-            file.write('var '+var_name_map[var]+" : " + val_str.strip()+'\n')
+            file.write('var '+var+" : " + val_str.strip()+'\n')
 
         for con, values in con_list.items():
-            file.write('con '+var_name_map[con[0]]+' '+var_name_map[con[1]]+' : '+values[:-3]+'\n')
+            if values:
+                file.write('con '+con[0]+' '+con[1]+' : '+values[:-3]+'\n')
     except IOError:
         print("failed")
     finally:
