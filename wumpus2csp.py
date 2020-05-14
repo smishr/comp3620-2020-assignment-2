@@ -110,17 +110,26 @@ def main():
 
     # Create possible moves
     current_loc = [observations[-1]['location'][0], observations[-1]['location'][1]]
-    moves = []
-    possible_moves = [[current_loc[0], current_loc[1] + 1], [current_loc[0], current_loc[1] - 1],
-                      [current_loc[0] + 1, current_loc[1]], [current_loc[0] - 1, current_loc[1]]]
-    for move in possible_moves:
-        if move[0] < 1 or move[0] > n_columns or move[1] < 1 or move[1] > n_rows:
-            continue
-        elif move in observed_loc:
-            continue
-        else:
-            if move not in moves:
-                moves.append(move)
+    if action == 'north':
+        moves = [[current_loc[0], current_loc[1] + 1]]
+    elif action == 'south':
+        moves = [[current_loc[0], current_loc[1] - 1]]
+    elif action == 'east':
+        moves = [[current_loc[0] + 1, current_loc[1]]]
+    else:
+        moves = [[current_loc[0] - 1, current_loc[1]]]
+
+    # moves = []
+    # possible_moves = [[current_loc[0], current_loc[1] + 1], [current_loc[0], current_loc[1] - 1],
+    #                   [current_loc[0] + 1, current_loc[1]], [current_loc[0] - 1, current_loc[1]]]
+    # for move in possible_moves:
+    #     if move[0] < 1 or move[0] > n_columns or move[1] < 1 or move[1] > n_rows:
+    #         continue
+    #     elif move in observed_loc:
+    #         continue
+    #     else:
+    #         if move not in moves:
+    #             moves.append(move)
     # print(moves)
 
     # Create variables map
@@ -147,6 +156,9 @@ def main():
                                     + '<' + str(val2[0]) + ',' + str(val2[1]) + '>' + ' : '
     # print(con_list)
 
+    # answer_flag = dao[action]
+    # if answer_flag == 'unsafe':
+
     try:
         scenario = (args.input.split('/')[1]).split('.')[0]
         target = 'b'
@@ -164,7 +176,7 @@ def main():
         for con, values in con_list.items():
             if values:
                 file.write('con ' + con[0] + ' ' + con[1] + ' : ' + values[:-3] + '\n')
-                
+
         file.close()
 
     except IOError:
