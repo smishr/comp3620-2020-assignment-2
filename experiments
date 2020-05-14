@@ -1,0 +1,6 @@
+Fisrtly, I tried the north_b and east_b of wumpus_02 together but get the same output
+and get the solution a=<1,4> w0=<2,3> p0=<3,1> p1=<3,2>
+
+Then I add the constrain that a and the action must keep sync
+con a z
+So, the north_b and east_b of wumpus_02 is separated

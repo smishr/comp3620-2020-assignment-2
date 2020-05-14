@@ -112,7 +112,7 @@ def main():
     current_loc = [observations[-1]['location'][0], observations[-1]['location'][1]]
     moves = []
     possible_moves = [[current_loc[0], current_loc[1] + 1], [current_loc[0], current_loc[1] - 1],
-                     [current_loc[0] + 1, current_loc[1]], [current_loc[0] - 1, current_loc[1]]]
+                      [current_loc[0] + 1, current_loc[1]], [current_loc[0] - 1, current_loc[1]]]
     for move in possible_moves:
         if move[0] < 1 or move[0] > n_columns or move[1] < 1 or move[1] > n_rows:
             continue
@@ -126,12 +126,50 @@ def main():
     # Create variables map
     variables = {'a': moves}
     for w in range(n_wumpuses):
-        variables['w'+str(w)] = wumpuse_loc
+        variables['w' + str(w)] = wumpuse_loc
     for p in range(n_pits):
-        variables['p'+str(p)] = pit_loc
+        variables['p' + str(p)] = pit_loc
     # print(variables)
 
     # Create constrain map:
+    con_list = {}
+    for key1 in variables.keys():
+        for key2 in variables.keys():
+            if key2 != key1 and ((key2, key1) not in con_list.keys() and (key1, key2) not in con_list.keys()):
+                con_list[(key1, key2)] = ''
+    # print(con_list)
+
+    for key in con_list.keys():
+        for val1 in variables[key[0]]:
+            for val2 in variables[key[1]]:
+                if val1 != val2:
+                    con_list[key] = con_list[key] + '<' + str(val1[0]) + ',' + str(val1[1]) + '>' + ' ' \
+                                    + '<' + str(val2[0]) + ',' + str(val2[1]) + '>' + ' : '
+    # print(con_list)
+
+    try:
+        scenario = (args.input.split('/')[1]).split('.')[0]
+        target = 'b'
+        new_out = output_path+'/'+scenario+'_'+action+'_'+target+'.csp'
+        path = os.path.exists(output_path)
+        if not path:
+            os.makedirs(output_path)
+        file = open(new_out, 'w')
+        for var, values in variables.items():
+            val_str = ''
+            for val in values:
+                val_str += '<' + str(val[0]) + ',' + str(val[1]) + '>' + ' '
+            file.write('var ' + var + " : " + val_str.strip() + '\n')
+
+        for con, values in con_list.items():
+            if values:
+                file.write('con ' + con[0] + ' ' + con[1] + ' : ' + values[:-3] + '\n')
+                
+        file.close()
+
+    except IOError:
+        print("failed")
+
 
 if __name__ == '__main__':
     main()
