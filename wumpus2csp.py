@@ -9,7 +9,7 @@ Student Details
 ---------------
 Student Name: Zheyuan Zhang
 Student Number: u6870923
-Date: 2020.5.1
+Date: 2020.5.1-2020.5.15
 """
 import argparse
 import os
@@ -72,7 +72,66 @@ def main():
     observations = dao["observations"]
 
     # YOUR CODE HERE
+    observed_loc = []
+    for obs in observations:
+        observed_loc.append(obs['location'])
 
+    # Create possible wumpuses location
+    wumpuse_loc = []
+    for obs in observations:
+        if 'Stench' in obs['percepts']:
+            new_loc = [[obs['location'][0], obs['location'][1] + 1], [obs['location'][0], obs['location'][1] - 1],
+                       [obs['location'][0] + 1, obs['location'][1]], [obs['location'][0] - 1, obs['location'][1]]]
+            for loc in new_loc:
+                if loc[0] < 1 or loc[0] > n_columns or loc[1] < 1 or loc[1] > n_rows:
+                    continue
+                elif loc in observed_loc:
+                    continue
+                else:
+                    if loc not in wumpuse_loc:
+                        wumpuse_loc.append(loc)
+    # print(wumpuse_loc)
+
+    # Create possible pits location
+    pit_loc = []
+    for obs in observations:
+        if 'Breeze' in obs['percepts']:
+            new_loc = [[obs['location'][0], obs['location'][1] + 1], [obs['location'][0], obs['location'][1] - 1],
+                       [obs['location'][0] + 1, obs['location'][1]], [obs['location'][0] - 1, obs['location'][1]]]
+            for loc in new_loc:
+                if loc[0] < 1 or loc[0] > n_columns or loc[1] < 1 or loc[1] > n_rows:
+                    continue
+                elif loc in observed_loc:
+                    continue
+                else:
+                    if loc not in pit_loc:
+                        pit_loc.append(loc)
+    # print(pit_loc)
+
+    # Create possible moves
+    current_loc = [observations[-1]['location'][0], observations[-1]['location'][1]]
+    moves = []
+    possible_moves = [[current_loc[0], current_loc[1] + 1], [current_loc[0], current_loc[1] - 1],
+                     [current_loc[0] + 1, current_loc[1]], [current_loc[0] - 1, current_loc[1]]]
+    for move in possible_moves:
+        if move[0] < 1 or move[0] > n_columns or move[1] < 1 or move[1] > n_rows:
+            continue
+        elif move in observed_loc:
+            continue
+        else:
+            if move not in moves:
+                moves.append(move)
+    # print(moves)
+
+    # Create variables map
+    variables = {'a': moves}
+    for w in range(n_wumpuses):
+        variables['w'+str(w)] = wumpuse_loc
+    for p in range(n_pits):
+        variables['p'+str(p)] = pit_loc
+    # print(variables)
+
+    # Create constrain map:
 
 if __name__ == '__main__':
     main()

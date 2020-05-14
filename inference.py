@@ -117,7 +117,7 @@ def ac3(gamma: CSP, assignment, domains, arc_queue, answer):
     while arc_queue:
         var, binary_var = arc_queue.popleft()
         temp_answer = reduce_arc(var, binary_var, gamma, [], domains)
-        if temp_answer:
+        if temp_answer is not None:
             for key in temp_answer:
                 if key not in answer:
                     answer.append(key)
