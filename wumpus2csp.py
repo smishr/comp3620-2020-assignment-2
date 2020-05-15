@@ -227,60 +227,57 @@ def main():
                                     + '<' + str(val2[0]) + ',' + str(val2[1]) + '>' + ' : '
     # print(con_list)
 
-    # try:
-    #     scenario = (args.input.split('/')[1]).split('.')[0]
-    #     target = 'b'
-    #     new_out = output_path + '/' + scenario + '_' + action + '_' + target + '.csp'
-    #     path = os.path.exists(output_path)
-    #     if not path:
-    #         os.makedirs(output_path)
-    #     file = open(new_out, 'w')
-    #     for var, values in variables.items():
-    #         val_str = ''
-    #         for val in values:
-    #             val_str += '<' + str(val[0]) + ',' + str(val[1]) + '>' + ' '
-    #         file.write('var ' + var + " : " + val_str.strip() + '\n')
-    #
-    #     for con, values in con_list.items():
-    #         if values:
-    #             file.write('con ' + con[0] + ' ' + con[1] + ' : ' + values[:-3] + '\n')
-    #     for con, values in special_con_list.items():
-    #         if values:
-    #             val_str = ''
-    #             for v in values:
-    #                 if len(v) == 2:
-    #                     val_str += '<' + str(v[0][0]) + ',' + str(v[0][1]) + '>' + ' ' + '<' + str(v[1][0]) + ',' + str(
-    #                         v[1][1]) + '> : '
-    #                 else:
-    #                     val_str += '<' + str(v[0][0]) + ',' + str(v[0][1]) + '>' + ' ' + '<' + str(v[1][0]) + ',' + str(
-    #                         v[1][1]) + '>' + ' ' + '<' + str(v[2][0]) + ',' + str(v[2][1]) + '> : '
-    #         file.write(con + ': ' + val_str[:-3] + '\n')
-    #
-    #     file.close()
-    #     from reference_n_to_bin import convert
-    #     convert(new_out, new_out)
-    #
-    # except IOError:
-    #     print("failed")
+    try:
+        scenario = (args.input.split('/')[1]).split('.')[0]
+        target = 'b'
+        new_out = output_path + '/' + scenario + '_' + action + '_' + target + '.csp'
+        path = os.path.exists(output_path)
+        if not path:
+            os.makedirs(output_path)
+        file = open(new_out, 'w')
+        for var, values in variables.items():
+            val_str = ''
+            for val in values:
+                val_str += '<' + str(val[0]) + ',' + str(val[1]) + '>' + ' '
+            file.write('var ' + var + " : " + val_str.strip() + '\n')
+
+        for con, values in con_list.items():
+            if values:
+                file.write('con ' + con[0] + ' ' + con[1] + ' : ' + values[:-3] + '\n')
+        for con, values in special_con_list.items():
+            if values:
+                val_str = ''
+                for v in values:
+                    if len(v) == 2:
+                        val_str += '<' + str(v[0][0]) + ',' + str(v[0][1]) + '>' + ' ' + '<' + str(v[1][0]) + ',' + str(
+                            v[1][1]) + '> : '
+                    else:
+                        val_str += '<' + str(v[0][0]) + ',' + str(v[0][1]) + '>' + ' ' + '<' + str(v[1][0]) + ',' + str(
+                            v[1][1]) + '>' + ' ' + '<' + str(v[2][0]) + ',' + str(v[2][1]) + '> : '
+            file.write(con + ': ' + val_str[:-3] + '\n')
+
+        file.close()
+        from reference_n_to_bin import convert
+        convert(new_out, new_out)
+
+    except IOError:
+        print("failed")
 
 
     # constrains for a.csp
     delete_list = []
+    shadow_con_list = con_list
     for key in con_list.keys():
         if 'a' in key:
             delete_list.append(key)
     for key in delete_list:
         con_list.pop(key)
-    # print(con_list)
-    # print(variables)
     possible_list = list(itertools.product(*variables.values()))
-    # print(possible_list)
     key_set = ''
     temp_con = []
     for key in variables.keys():
         key_set += key + ' '
     for k in possible_list:
-        # print(k)
         count = 0
         for val in k:
             if val == k[0]:
@@ -288,7 +285,6 @@ def main():
         if count > 1:
             temp_con.append(k)
     special_con_list[key_set] = temp_con
-    # print(special_con_list)
 
     try:
         scenario = (args.input.split('/')[1]).split('.')[0]
@@ -307,7 +303,7 @@ def main():
         for con, values in con_list.items():
             if values:
                 file.write('con ' + con[0] + ' ' + con[1] + ' : ' + values[:-3] + '\n')
-        print(special_con_list)
+
         for con, values in special_con_list.items():
             if values:
                 val_str = ''
@@ -315,11 +311,11 @@ def main():
                     for x in v:
                         val_str += '<' + str(x[0]) + ',' + str(x[1]) + '>' + ' '
                     val_str += ' : '
-            file.write(con + ': ' + val_str[:-3] + '\n')
+                file.write(con + ': ' + val_str[:-3] + '\n')
 
         file.close()
-        # from reference_n_to_bin import convert
-        # convert(new_out, new_out)
+        from reference_n_to_bin import convert
+        convert(new_out, new_out)
 
     except IOError:
         print("failed")
