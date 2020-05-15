@@ -128,6 +128,12 @@ def main():
                         pit_variable[new_p].append(loc)
             count += 1
 
+    # create constrain for special case
+    # There exists that two place can get stench, but actually one wumpus or pit
+    # The idea is that find all the permutation of the constrains, if there is only one wumpus
+    # then all the variables in the constrain must be the same
+    # If there exists more than one pit or wumpus and has this situation,
+    # then the same variable in one permutation must be the same with n_pits or n_wumpus
     special_con_list = {}
     import itertools
     wumpus_special = False
@@ -148,16 +154,13 @@ def main():
                 if candidate[1:] == candidate[:-1]:
                     if key_set not in special_con_list.keys():
                         temp_con.append(candidate)
-                        # print(special_con_list)
             special_con_list[key_set] = temp_con
         else:
             for p in possible_list:
                 for val in p:
                     if p.count(val) == n_wumpuses and p not in temp_con:
                         temp_con.append(p)
-                        # print(p)
             special_con_list[key_set] = temp_con
-        # print(special_con_list)
     else:
         for key in wumpus_variable.keys():
             variables[key] = wumpus_variable[key]
@@ -167,7 +170,6 @@ def main():
         pit_special = True
         # get all the permutation
         possible_list = list(itertools.product(*pit_variable.values()))
-        # print(possible_list)
         key_set = 'con '
         for key in pit_variable.keys():
             key_set += key + ' '
@@ -178,21 +180,16 @@ def main():
                 if candidate[1:] == candidate[:-1]:
                     if key_set not in special_con_list.keys():
                         temp_con.append(candidate)
-                        # print(special_con_list)
             special_con_list[key_set] = temp_con
         else:
             for p in possible_list:
                 for val in p:
                     if p.count(val) == n_pits and p not in temp_con:
                         temp_con.append(p)
-                        # print(p)
             special_con_list[key_set] = temp_con
-        # print(special_con_list)
     else:
         for key in pit_variable.keys():
             variables[key] = pit_variable[key]
-
-    # print(variables)
 
     # Create normal constrain
     con_list = {}
@@ -200,7 +197,6 @@ def main():
         for key2 in variables.keys():
             if key2 != key1 and ((key2, key1) not in con_list.keys() and (key1, key2) not in con_list.keys()):
                 con_list[(key1, key2)] = ''
-    # print(con_list)
     if wumpus_special:
         for w in wumpus_variable.keys():
             con_list[('a', w)] = ''
@@ -218,14 +214,12 @@ def main():
     for key in pit_variable:
         variables[key] = pit_variable[key]
 
-    # print(con_list)
     for key in con_list.keys():
         for val1 in variables[key[0]]:
             for val2 in variables[key[1]]:
                 if val1 != val2:
                     con_list[key] = con_list[key] + '<' + str(val1[0]) + ',' + str(val1[1]) + '>' + ' ' \
                                     + '<' + str(val2[0]) + ',' + str(val2[1]) + '>' + ' : '
-    # print(con_list)
 
     try:
         scenario = (args.input.split('/')[1]).split('.')[0]
