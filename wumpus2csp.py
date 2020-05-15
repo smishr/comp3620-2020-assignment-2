@@ -257,8 +257,8 @@ def main():
             file.write(con + ': ' + val_str[:-3] + '\n')
 
         file.close()
-        from reference_n_to_bin import convert
-        convert(new_out, new_out)
+        # from reference_n_to_bin import convert
+        # convert(new_out, new_out)
 
     except IOError:
         print("failed")
